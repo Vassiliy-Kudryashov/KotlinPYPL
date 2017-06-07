@@ -138,6 +138,16 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
         g2d.draw(path)
     }
 
+    override fun getComponentName(): String {
+        return "Kotlin TIOBE Index Widget"
+    }
+
+    override fun disposeComponent() {
+    }
+
+    override fun projectClosed() {
+    }
+
     companion object {
 
         private val KT_TIOBE_WHAT = "kt.tiobe.what"
