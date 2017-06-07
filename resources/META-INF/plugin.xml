@@ -1,0 +1,13 @@
+<idea-plugin>
+  <id>KotlinTIOBE</id>
+  <idea-version since-build="145.0"/>
+  <vendor email="Vassiliy.Kudryashov@jetbrains.com">Vassiliy Kudryashov</vendor>
+  <name>TIOBE index for Kotlin</name>
+  <version>1.0.1</version>
+  <description><![CDATA[
+      <p>A small widget for status bar that shows <a href="https://www.tiobe.com/tiobe-index/">TIOBE index</a> for <a href="https://kotlinlang.org/">Kotlin</a></p>
+    ]]></description>
+  <project-components>
+    <component><implementation-class>ktindex.KtIndexWidget</implementation-class></component>
+  </project-components>
+</idea-plugin>
