@@ -98,15 +98,19 @@ public class KtIndexWidget extends JLabel implements ProjectComponent, CustomSta
     if (pos == -1) throw new IOException();
     int pos2 = s.indexOf("<", pos + 8);
     if (pos2 == -1) throw new IOException();
-    int value = Integer.parseInt(s.substring(pos + 8, pos2));
+    try {
+      int value = Integer.parseInt(s.substring(pos + 8, pos2));
 
-    Prefs.put(KT_TIOBE_WHAT, "" + value);
-    Prefs.put(KT_TIOBE_WHEN, "" + System.currentTimeMillis());
+      Prefs.put(KT_TIOBE_WHAT, "" + value);
+      Prefs.put(KT_TIOBE_WHEN, "" + System.currentTimeMillis());
 
-    if (value != storedValue && storedValue != 0) {
-      return "#" + storedValue + " " + ARROW + " #" + value;
-    } else {
-      return "#" + value;
+      if (value != storedValue && storedValue != 0) {
+        return "#" + storedValue + " " + ARROW + " #" + value;
+      } else {
+        return "#" + value;
+      }
+    } catch (NumberFormatException e) {
+      throw new IOException(e);
     }
   }
 
