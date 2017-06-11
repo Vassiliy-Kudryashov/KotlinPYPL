@@ -5,6 +5,8 @@ import com.intellij.ide.Prefs
 import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.wm.CustomStatusBarWidget
@@ -39,6 +41,11 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
     override fun install(statusBar: StatusBar) {
         revalidate()
         repaint()
+        ProjectManager.getInstance().addProjectManagerListener(myProject, object: ProjectManagerListener {
+            override fun projectClosing(project: Project?) {
+                WindowManager.getInstance().getStatusBar(myProject).removeWidget(ID())
+            }
+        })
     }
 
     override fun run() {
