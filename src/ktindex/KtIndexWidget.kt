@@ -13,7 +13,6 @@ import com.intellij.openapi.wm.CustomStatusBarWidget
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.WindowManager
-import com.intellij.openapi.wm.impl.status.PositionPanel
 import com.intellij.util.io.HttpRequests
 import com.intellij.util.ui.EmptyIcon
 import com.intellij.util.ui.GraphicsUtil
@@ -30,12 +29,12 @@ import javax.swing.SwingUtilities
 import javax.swing.border.Border
 
 class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.ICON_16, SwingConstants.LEADING), ProjectComponent, CustomStatusBarWidget, StatusBarWidget, DumbAware, Border, Runnable {
-    private val KT_TIOBE_WHAT = "kt.tiobe.what"
-    private val KT_TIOBE_WHEN = "kt.tiobe.when"
+    private val KT_PYPL_WHAT = "kt.pypl.what"
+    private val KT_PYPL_WHEN = "kt.pypl.when"
     private val ARROW = '\u2192'
 
     override fun projectOpened() {
-        WindowManager.getInstance().getStatusBar(myProject).addWidget(this, "before " + PositionPanel.ID)
+        WindowManager.getInstance().getStatusBar(myProject).addWidget(this, "before Position")
     }
 
     override fun install(statusBar: StatusBar) {
@@ -51,9 +50,9 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
     override fun run() {
         try {
             val text = initText()
-
+            toolTipText = "PYPL index for Kotlin"
             SwingUtilities.invokeLater {
-                icon = IconLoader.getIcon("K.png")
+                icon = IconLoader.findIcon(KtIndexWidget::class.java.getResource("./K.png"), false)
                 font = if (SystemInfo.isMac) JBUI.Fonts.smallFont() else JBUI.Fonts.miniFont()
                 iconTextGap = -getFontMetrics(font).stringWidth("#") / 2 - 1
                 if (!font.canDisplay(ARROW)) {
@@ -78,10 +77,12 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
 
     @Throws(IOException::class)
     private fun initText(): String {
+        Prefs.remove("kt.tiobe.what")
+        Prefs.remove("kt.tiobe.when")
         var storedValue = 0
         try {
-            storedValue = Integer.parseInt(Prefs.get(KT_TIOBE_WHAT, "0"))
-            val storedTime = java.lang.Long.parseLong(Prefs.get(KT_TIOBE_WHEN, "0"))
+            storedValue = Integer.parseInt(Prefs.get(KT_PYPL_WHAT, "0"))
+            val storedTime = java.lang.Long.parseLong(Prefs.get(KT_PYPL_WHEN, "0"))
             if (storedValue != 0 && storedTime != 0L && System.currentTimeMillis() - storedTime < 86400000) {
                 return "#" + storedValue
             }
@@ -89,18 +90,20 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
             //ignore and parse
         }
 
-        val s = HttpRequests.request("https://www.tiobe.com/tiobe-index/").readString(null)
+        val s = HttpRequests.request("http://pypl.github.io/PYPL.html").readString(null)
         var pos = s.indexOf("<td>Kotlin</td>")
         if (pos == -1) throw IOException()
-        pos = s.lastIndexOf("<tr><td>", pos)
+        pos = s.lastIndexOf("<tr><td", pos)
         if (pos == -1) throw IOException()
-        val pos2 = s.indexOf("<", pos + 8)
+        pos = s.indexOf(">", pos+7);
+        if (pos == -1) throw IOException()
+        val pos2 = s.indexOf("<", pos + 1)
         if (pos2 == -1) throw IOException()
         try {
-            val value = Integer.parseInt(s.substring(pos + 8, pos2))
+            val value = Integer.parseInt(s.substring(pos + 1, pos2))
 
-            Prefs.put(KT_TIOBE_WHAT, "" + value)
-            Prefs.put(KT_TIOBE_WHEN, "" + System.currentTimeMillis())
+            Prefs.put(KT_PYPL_WHAT, "" + value)
+            Prefs.put(KT_PYPL_WHEN, "" + System.currentTimeMillis())
 
             if (value != storedValue && storedValue != 0) {
                 return "#$storedValue $ARROW #$value"
@@ -118,7 +121,7 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
     }
 
     override fun ID(): String {
-        return "TIOBE Index for Kotlin"
+        return "PYPL Index for Kotlin"
     }
 
     override fun getPresentation(platformType: StatusBarWidget.PlatformType): StatusBarWidget.WidgetPresentation? {
@@ -128,7 +131,8 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
     override fun dispose() {}
 
     override fun getBorderInsets(c: Component): Insets {
-        return JBUI.emptyInsets()
+        if (JBUI.pixScale() > 1) return JBUI.emptyInsets()
+        return JBUI.insets(0, 0, 0, 2)
     }
 
     override fun isBorderOpaque(): Boolean {

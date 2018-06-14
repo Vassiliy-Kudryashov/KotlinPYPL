@@ -2,10 +2,10 @@
   <id>KotlinTIOBE</id>
   <idea-version since-build="145.0"/>
   <vendor email="Vassiliy.Kudryashov@jetbrains.com">Vassiliy Kudryashov</vendor>
-  <name>TIOBE index for Kotlin</name>
-  <version>1.0.4</version>
+  <name>PYPL index for Kotlin</name>
+  <version>2.0</version>
   <description><![CDATA[
-      <p>A small widget for status bar that shows actual <a href="https://www.tiobe.com/tiobe-index/">TIOBE index</a> for <a href="https://kotlinlang.org/">Kotlin language</a></p>
+      <p>A small widget for status bar that shows actual <a href="http://pypl.github.io/PYPL.html">PYPL index</a> for <a href="https://kotlinlang.org/">Kotlin language</a></p>
     ]]></description>
   <project-components>
     <component><implementation-class>ktindex.KtIndexWidget</implementation-class></component>
