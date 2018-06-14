@@ -165,7 +165,7 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
     }
 
     override fun getComponentName(): String {
-        return "Kotlin TIOBE Index Widget"
+        return "Kotlin PYPL Index Widget"
     }
 
     override fun disposeComponent() {
