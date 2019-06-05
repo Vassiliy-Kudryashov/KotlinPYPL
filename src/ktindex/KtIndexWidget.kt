@@ -41,7 +41,7 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
         revalidate()
         repaint()
         ProjectManager.getInstance().addProjectManagerListener(myProject, object: ProjectManagerListener {
-            override fun projectClosing(project: Project?) {
+            override fun projectClosing(project: Project) {
                 WindowManager.getInstance().getStatusBar(myProject).removeWidget(ID())
             }
         })
@@ -95,7 +95,7 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
         if (pos == -1) throw IOException()
         pos = s.lastIndexOf("<tr><td", pos)
         if (pos == -1) throw IOException()
-        pos = s.indexOf(">", pos+7);
+        pos = s.indexOf(">", pos+7)
         if (pos == -1) throw IOException()
         val pos2 = s.indexOf("<", pos + 1)
         if (pos2 == -1) throw IOException()
@@ -141,26 +141,27 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
 
     override fun paintBorder(c: Component, g: Graphics, x: Int, y: Int, width: Int, height: Int) {
         val m = (height - .5f) / 2
+        val diff = (height - icon.iconHeight) / 2
         val g2d = g as Graphics2D
         GraphicsUtil.setupAAPainting(g2d)
         g2d.paint = GradientPaint(
-                (x + JBUI.scale(7)).toFloat(), y.toFloat(), Color(223, 110, 0, 0),
+                x.toFloat(), y.toFloat(), Color(223, 110, 0, 0),
                 (x + JBUI.scale(14)).toFloat(), y.toFloat(), Color(223, 110, 0))
-        g2d.draw(Line2D.Float((x + JBUI.scale(7)).toFloat(), y.toFloat(), (x + JBUI.scale(14)).toFloat(), y.toFloat()))
+        g2d.draw(Line2D.Float((x).toFloat(), diff + y.toFloat(), (x + JBUI.scale(14)).toFloat(), diff + y.toFloat()))
         g2d.paint = GradientPaint(
-                (x + JBUI.scale(7)).toFloat(), y + 2f * m, Color(90, 73, 173, 0),
+                x.toFloat(), y + 2f * m, Color(90, 73, 173, 0),
                 (x + JBUI.scale(14)).toFloat(), y + 2f * m, Color(90, 73, 173))
-        g2d.draw(Line2D.Float((x + JBUI.scale(7)).toFloat(), y + 2 * m, (x + JBUI.scale(14)).toFloat(), y + 2 * m))
+        g2d.draw(Line2D.Float(x.toFloat(), y + 2 * m - diff, (x + JBUI.scale(14)).toFloat(), y + 2 * m - diff))
 
         g2d.paint = GradientPaint(
                 x.toFloat(), y.toFloat(), Color(223, 110, 0),
                 x.toFloat(), y + height - .5f, Color(90, 73, 173))
         val path = GeneralPath()
-        path.moveTo((x + JBUI.scale(14)).toFloat(), y.toFloat())
-        path.lineTo((x + width - 1).toFloat() - m, y.toFloat())
+        path.moveTo((x + JBUI.scale(14)).toFloat(), y.toFloat() + diff)
+        path.lineTo((x + width - 1).toFloat() - m + diff, y.toFloat() + diff)
         path.lineTo((x + width - 1).toFloat(), y + m)
-        path.lineTo((x + width - 1).toFloat() - m, y + 2 * m)
-        path.lineTo((x + JBUI.scale(14)).toFloat(), y + 2 * m)
+        path.lineTo((x + width - 1).toFloat() - m + diff, y + 2 * m - diff)
+        path.lineTo((x + JBUI.scale(14)).toFloat(), y + 2 * m - diff)
         g2d.draw(path)
     }
 
