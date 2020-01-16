@@ -1,9 +1,10 @@
 <idea-plugin>
   <id>KotlinTIOBE</id>
-  <idea-version since-build="145.0"/>
+  <depends>com.intellij.modules.platform</depends>
+  <idea-version since-build="191.0"/>
   <vendor email="Vassiliy.Kudryashov@jetbrains.com">Vassiliy Kudryashov</vendor>
   <name>PYPL index for Kotlin</name>
-  <version>2.1</version>
+  <version>2.2</version>
   <description><![CDATA[
       <p>A small widget for status bar that shows actual <a href="http://pypl.github.io/PYPL.html">PYPL index</a> for <a href="https://kotlinlang.org/">Kotlin language</a></p>
     ]]></description>
