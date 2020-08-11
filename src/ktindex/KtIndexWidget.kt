@@ -34,13 +34,13 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
     private val ARROW = '\u2192'
 
     override fun projectOpened() {
-        WindowManager.getInstance().getStatusBar(myProject).addWidget(this, "before Position")
+        WindowManager.getInstance().getStatusBar(myProject).addWidget(this, "before Position", myProject)
     }
 
     override fun install(statusBar: StatusBar) {
         revalidate()
         repaint()
-        ProjectManager.getInstance().addProjectManagerListener(myProject, object: ProjectManagerListener {
+        ProjectManager.getInstance().addProjectManagerListener(myProject, object : ProjectManagerListener {
             override fun projectClosing(project: Project) {
                 WindowManager.getInstance().getStatusBar(myProject).removeWidget(ID())
             }
@@ -52,7 +52,7 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
             val text = initText()
             toolTipText = "PYPL index for Kotlin"
             SwingUtilities.invokeLater {
-                icon = IconLoader.findIcon(KtIndexWidget::class.java.getResource("./K.png"), false)
+                icon = IconLoader.findIcon(KtIndexWidget::class.java.getResource("./K.png"), true)
                 font = if (SystemInfo.isMac) JBUI.Fonts.smallFont() else JBUI.Fonts.miniFont()
                 iconTextGap = -getFontMetrics(font).stringWidth("#") / 2 - 1
                 if (!font.canDisplay(ARROW)) {
@@ -95,7 +95,7 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
         if (pos == -1) throw IOException()
         pos = s.lastIndexOf("<tr><td", pos)
         if (pos == -1) throw IOException()
-        pos = s.indexOf(">", pos+7)
+        pos = s.indexOf(">", pos + 7)
         if (pos == -1) throw IOException()
         val pos2 = s.indexOf("<", pos + 1)
         if (pos2 == -1) throw IOException()
@@ -122,10 +122,6 @@ class KtIndexWidget(private val myProject: Project) : JLabel("   ", EmptyIcon.IC
 
     override fun ID(): String {
         return "PYPL Index for Kotlin"
-    }
-
-    override fun getPresentation(platformType: StatusBarWidget.PlatformType): StatusBarWidget.WidgetPresentation? {
-        return null
     }
 
     override fun dispose() {}
